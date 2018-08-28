@@ -1,4 +1,5 @@
 import pygame
+import os
 import grid_object as grid_o
 import minesweeper_constants as const
 
@@ -6,38 +7,40 @@ class GameManager(object):
     def __init__(self):
         pygame.init()
 
-        logo = pygame.image.load("img/minesweeper_logo.png")
+        self.my_path = "%s/.." % os.path.dirname(os.path.realpath(__file__))
+
+        logo = pygame.image.load("%s/img/minesweeper_logo.png" % self.my_path)
         pygame.display.set_icon(logo)
 
         pygame.display.set_caption("Minesweeper")
 
         self.screen = pygame.display.set_mode((const.WIDTH, const.HEIGHT))
 
-        self.background_tex = pygame.image.load("img/background.png")
+        self.background_tex = pygame.image.load("%s/img/background.png" % self.my_path)
         self.cell_textures = [
-            pygame.image.load("img/cell/cell_hidden.png"),
-            pygame.image.load("img/cell/cell_revealed.png"),
-            pygame.image.load("img/cell/mine.png"),
-            pygame.image.load("img/cell/mine_red.png"),
-            pygame.image.load("img/cell/flag.png")
+            pygame.image.load("%s/img/cell/cell_hidden.png" % self.my_path),
+            pygame.image.load("%s/img/cell/cell_revealed.png" % self.my_path),
+            pygame.image.load("%s/img/cell/mine.png" % self.my_path),
+            pygame.image.load("%s/img/cell/mine_red.png" % self.my_path),
+            pygame.image.load("%s/img/cell/flag.png" % self.my_path)
         ]
         self.number_tex_list   = [
-            pygame.image.load("img/numbers/num_1.png"),
-            pygame.image.load("img/numbers/num_2.png"),
-            pygame.image.load("img/numbers/num_3.png"),
-            pygame.image.load("img/numbers/num_4.png"),
-            pygame.image.load("img/numbers/num_5.png"),
-            pygame.image.load("img/numbers/num_6.png"),
-            pygame.image.load("img/numbers/num_7.png"),
-            pygame.image.load("img/numbers/num_8.png")
+            pygame.image.load("%s/img/numbers/num_1.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_2.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_3.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_4.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_5.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_6.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_7.png" % self.my_path),
+            pygame.image.load("%s/img/numbers/num_8.png" % self.my_path)
         ]
         self.restart_button_list = [
-            pygame.image.load("img/restart_button/restart_button_green.png"),
-            pygame.image.load("img/restart_button/restart_button_yellow.png"),
-            pygame.image.load("img/restart_button/restart_button_red.png"),
-            pygame.image.load("img/restart_button/restart_button_green_clicked.png"),
-            pygame.image.load("img/restart_button/restart_button_yellow_clicked.png"),
-            pygame.image.load("img/restart_button/restart_button_red_clicked.png")
+            pygame.image.load("%s/img/restart_button/restart_button_green.png" % self.my_path),
+            pygame.image.load("%s/img/restart_button/restart_button_yellow.png" % self.my_path),
+            pygame.image.load("%s/img/restart_button/restart_button_red.png" % self.my_path),
+            pygame.image.load("%s/img/restart_button/restart_button_green_clicked.png" % self.my_path),
+            pygame.image.load("%s/img/restart_button/restart_button_yellow_clicked.png" % self.my_path),
+            pygame.image.load("%s/img/restart_button/restart_button_red_clicked.png" % self.my_path)
         ]
         self.restart_button_rect = pygame.Rect(const.RESTART_BUTTON_COORD, const.RESTART_BUTTON_SIZE)
         self.restart_button_state = 0
