@@ -1,5 +1,6 @@
 import pygame
 import minesweeper_constants as const
+import debugger
 
 class Cell(pygame.Rect):
     def __init__(self, left, top, width, height, textures, idx, grid):
@@ -19,6 +20,10 @@ class Cell(pygame.Rect):
         self.held = False
         self.highlight = False
 
+        self.exploded_mine = (-1, -1)
+
+        self.debug = debugger.Debugger("debug.log")
+
     def place_mine(self):
         self.is_mine = True
 
@@ -30,29 +35,38 @@ class Cell(pygame.Rect):
     def clicked(self, leftclick, double_click):
         if leftclick: # left click
             if self.is_revealed and self.number > 0 and double_click:
-                flag_count = self.grid.get_cell_minecount(self.idx[0], self.idx[1], flags_override=True)
-                if flag_count == self.number:
+                succesful_flag_count, self.exploded_mine = self.grid.get_cell_minecount(self.idx[0], self.idx[1], flags_override=True)
+                if succesful_flag_count == self.number:
+                    if self.exploded_mine:
+                        return -3 # Exit code 3 means player double clicked a cell with wrong flags around it (and is now dead)
                     self.search_and_reveal()
             else:
                 return self.reveal(True)
         else: # right click
+            if self.is_revealed:
+                return 0 # Exit code 0 means nothing special happened
             self.flagged = not self.flagged
+            if self.flagged:
+                return 1 # Exit code 1 means a mine was succesfully flagged
+            else:
+                return -1 # Exit code -1 means a mine was unflagged
 
     def reveal(self, player_click):
+        """ 'A technically recursive function is still a recursive function' -Author """
         if self.is_mine and player_click:
             self.is_revealed = True
-            return 1
+            return -2 # Exit code -2 means player clicked mine (and is now dead)
         elif self.is_mine:
-            return 0
+            return 0 # See exit code 0 in clicked()
         elif self.number > 0:
             self.is_revealed = True
-            return 0
+            return 0 # See above
         self.is_revealed = True
         if player_click:
             self.search_and_reveal()
         else:
-            return 2
-        return 0
+            return 2 # Exitcode 2 means search_and_reveal() should append the cell to it's search queue
+        return 0 # See above
 
     def search_and_reveal(self):
         queue = [self.idx]
@@ -61,7 +75,7 @@ class Cell(pygame.Rect):
             for i in range(queue[0][0]-1, queue[0][0]+2):
                 for j in range(queue[0][1]-1, queue[0][1]+2):
                     if not (i < 0 or i > const.GRID_DIM[1]-1 or j < 0 or j > const.GRID_DIM[0]-1) \
-                    and (i,j) not in seen:
+                    and (i,j) not in seen and not self.grid.cells[i][j].is_revealed:
                         seen.append((i,j))
                         exit_code = self.grid.cells[i][j].reveal(False)
                         if exit_code == 2:

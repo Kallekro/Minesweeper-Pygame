@@ -12,6 +12,8 @@ GRID_START_COORD = (32, 127)
 RESTART_BUTTON_COORD = (558, 35)
 # Size of restart button in pixels
 RESTART_BUTTON_SIZE = (64,59)
+# Position of mines left text label in pixels
+MINES_LEFT_LABEL_POS = (150, 35)
 # Time between clicks for double click
 DOUBLE_CLICK_TIME = 200
 # Amount of mines spawned

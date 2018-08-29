@@ -3,6 +3,8 @@ import os
 import grid_object as grid_o
 import minesweeper_constants as const
 
+import debugger
+
 class GameManager(object):
     def __init__(self):
         pygame.init()
@@ -43,16 +45,25 @@ class GameManager(object):
             pygame.image.load("%s/img/restart_button/restart_button_red_clicked.png" % self.my_path)
         ]
         self.restart_button_rect = pygame.Rect(const.RESTART_BUTTON_COORD, const.RESTART_BUTTON_SIZE)
-        self.restart_button_state = 0
 
+        self.ui_font = pygame.font.SysFont("monogame", 25, True)
+
+        ##################
+        # This part should match restart_game()
         self.grid = grid_o.Grid(self.cell_textures, self.number_tex_list)
         self.is_alive = True
         self.mines_placed = False
+        self.mines_flagged = 0
+        self.restart_button_state = 0
+        ##################
 
+        # For input
         self.left_mouse_held = False
         self.last_left_click = 0
         self.right_mouse_held = False
         self.last_cell_held = None
+
+        self.debug = debugger.Debugger("debug.log")
 
     def play_game(self):
         self.mines_placed = False
@@ -69,6 +80,7 @@ class GameManager(object):
         self.grid = grid_o.Grid(self.cell_textures, self.number_tex_list)
         self.is_alive = True
         self.mines_placed = False
+        self.mines_flagged = 0
         self.restart_button_state = 0
 
     def handle_input(self):
@@ -108,8 +120,15 @@ class GameManager(object):
                     self.mines_placed = True
                 if (mouse_released and not clicked_cell.flagged) or (mouse_button_state[2] and not self.right_mouse_held):
                     self.right_mouse_held = True
-                    if clicked_cell.clicked(mouse_released, double_click) == 1:
+                    clicked_exit_code = clicked_cell.clicked(mouse_released, double_click)
+                    if clicked_exit_code == 1:
+                        self.mines_flagged += 1
+                    elif clicked_exit_code == -1:
+                        self.mines_flagged -= 1
+                    elif clicked_exit_code == -2:
                         self.player_dies(clicked_cell)
+                    elif clicked_exit_code == -3:
+                        self.player_dies(clicked_cell.exploded_mine)
 
         elif not mouse_button_state[2] and self.right_mouse_held:
             self.right_mouse_held = False
@@ -117,6 +136,11 @@ class GameManager(object):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return -1
+            #if event.type == pygame.KEYDOWN:
+            #    if event.key == pygame.K_d:
+            #        if clicked_cell:
+            #            self.debug.write("Is flagged: %s\n" % str(clicked_cell.flagged))
+
 
     def player_dies(self, clicked_mine_cell):
         self.is_alive = False
@@ -128,4 +152,9 @@ class GameManager(object):
         self.screen.blit(self.background_tex, (0,0))
         self.screen.blit(self.restart_button_list[self.restart_button_state], self.restart_button_rect.topleft)
         self.grid.draw(self.screen)
+        self.draw_ui()
         pygame.display.flip()
+
+    def draw_ui(self):
+        mines_left_label = self.ui_font.render("%d" % (const.MINE_COUNT - self.mines_flagged), 1, (250, 104, 99))
+        self.screen.blit(mines_left_label, const.MINES_LEFT_LABEL_POS)

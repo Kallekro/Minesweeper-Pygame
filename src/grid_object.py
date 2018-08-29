@@ -48,18 +48,26 @@ class Grid(object):
             for j in range(const.GRID_DIM[0]):
                 if self.cells[i][j].is_mine:
                     continue
-                num = self.get_cell_minecount(i, j)
+                num, cell = self.get_cell_minecount(i, j)
                 self.cells[i][j].set_num(num, self.number_tex_list[num-1])
 
     def get_cell_minecount(self, row, col, flags_override = False):
         count = 0
+        mine_exploded = None
         for i in range(row-1, row+2):
             for j in range(col-1, col+2):
                 if i < 0 or i > const.GRID_DIM[1]-1 or j < 0 or j > const.GRID_DIM[0]-1:
                     continue
-                if (self.cells[i][j].is_mine and not flags_override) or (self.cells[i][j].flagged and flags_override):
-                    count += 1
-        return count
+                cell = self.cells[i][j]
+                if flags_override:
+                    if cell.flagged:
+                        count += 1
+                    elif cell.is_mine and not cell.flagged:
+                        mine_exploded = cell
+                else:
+                    if cell.is_mine:
+                        count += 1
+        return count, mine_exploded
 
     def reveal_all_mines(self):
         for i in range(const.GRID_DIM[1]):
