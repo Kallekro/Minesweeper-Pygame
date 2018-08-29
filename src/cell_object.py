@@ -5,12 +5,13 @@ import debugger
 class Cell(pygame.Rect):
     def __init__(self, left, top, width, height, textures, idx, grid):
         pygame.Rect.__init__(self, left, top, width, height)
-        self.hidden_tex   = textures[0]
-        self.revealed_tex = textures[1]
-        self.mine_tex     = textures[2]
-        self.mine_red_tex = textures[3]
-        self.flag_tex     = textures[4]
-        self.number_tex   = None
+        self.hidden_tex     = textures[0]
+        self.revealed_tex   = textures[1]
+        self.mine_tex       = textures[2]
+        self.mine_red_tex   = textures[3]
+        self.mine_green_tex = textures[4]
+        self.flag_tex       = textures[5]
+        self.number_tex     = None
         self.idx = idx
         self.grid = grid
         self.is_revealed = False
@@ -18,7 +19,7 @@ class Cell(pygame.Rect):
         self.flagged = False
         self.number = -1
         self.held = False
-        self.highlight = False
+        self.highlight = 0
 
         self.exploded_mine = (-1, -1)
 
@@ -46,13 +47,21 @@ class Cell(pygame.Rect):
             if self.is_revealed:
                 return 0 # Exit code 0 means nothing special happened
             self.flagged = not self.flagged
-            if self.flagged:
-                return 1 # Exit code 1 means a mine was succesfully flagged
-            else:
+            if self.flagged and self.is_mine:
+                return 1 # Exit code 1 means a mine was flagged
+            elif not self.flagged and self.is_mine:
                 return -1 # Exit code -1 means a mine was unflagged
+            elif self.flagged and not self.is_mine:
+                return 4 # Exit code 3 means an empty cell was flagged
+            elif not self.flagged and not self.is_mine:
+                return -4 # Exit code 4 means an empty cell was unflagged
+            else:
+                return 0
 
-    def reveal(self, player_click):
+    def reveal(self, player_click, reveal_all=False):
         """ 'A technically recursive function is still a recursive function' -Author """
+        if self.flagged and not reveal_all:
+            return 0
         if self.is_mine and player_click:
             self.is_revealed = True
             return -2 # Exit code -2 means player clicked mine (and is now dead)
@@ -86,8 +95,10 @@ class Cell(pygame.Rect):
         if self.is_revealed:
             screen.blit(self.revealed_tex, self.topleft)
             if self.is_mine:
-                if self.highlight:
+                if self.highlight == 1:
                     screen.blit(self.mine_red_tex, self.topleft)
+                elif self.highlight == 2:
+                    screen.blit(self.mine_green_tex, self.topleft)
                 else:
                     screen.blit(self.mine_tex, self.topleft)
             elif self.number > 0:

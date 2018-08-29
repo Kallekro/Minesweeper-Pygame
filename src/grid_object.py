@@ -73,7 +73,14 @@ class Grid(object):
         for i in range(const.GRID_DIM[1]):
             for j in range(const.GRID_DIM[0]):
                 if self.cells[i][j].is_mine:
-                    self.cells[i][j].reveal(True)
+                    self.cells[i][j].reveal(True, True)
+
+    def reveal_all(self):
+        for i in range(const.GRID_DIM[1]):
+            for j in range(const.GRID_DIM[0]):
+                self.cells[i][j].reveal(True, True)
+                if self.cells[i][j].is_mine:
+                    self.cells[i][j].highlight = 2 # Set to green highlight
 
     def get_clicked_cell(self, click_pos):
         for i in range(const.GRID_DIM[1]):
