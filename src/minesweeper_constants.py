@@ -1,3 +1,4 @@
+#!/usr/bin python3
 # Width of play arena
 WIDTH = 1185
 # Height of play arena

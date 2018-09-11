@@ -1,3 +1,4 @@
+#!/usr/bin python3
 import pygame
 import minesweeper_constants as const
 import debugger

@@ -1,3 +1,4 @@
+#!/usr/bin python3
 import random
 import pygame
 import gamemanager_object as gmanager

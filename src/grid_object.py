@@ -1,3 +1,4 @@
+#!/usr/bin python3
 import random
 import cell_object
 import minesweeper_constants as const
