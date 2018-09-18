@@ -11,3 +11,5 @@ Go to this folder in your terminal and run the game with the command
 ```
 python3 minesweeper.py
 ```
+# Screenshots
+![screenshot1](https://raw.githubusercontent.com/kallekro/Minesweeper-Pygame/master/screenshots/screenshot1.png)
