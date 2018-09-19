@@ -13,3 +13,4 @@ python3 minesweeper.py
 ```
 # Screenshots
 ![screenshot1](https://raw.githubusercontent.com/kallekro/Minesweeper-Pygame/master/screenshots/screenshot1.png)
+![screenshot2](https://raw.githubusercontent.com/kallekro/Minesweeper-Pygame/master/screenshots/screenshot2.png)
